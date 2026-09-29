@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Upload · El Niño Health Bulletin Parser{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <h1>Upload Health Bulletin</h1>
+  <p>PDF, TXT or photo. If the PDF is a scan or contains images, those pictures are OCR’d automatically.</p>
+</section>
+
+<div class="upload-card">
+  <form method="POST" enctype="multipart/form-data" id="uploadForm">
+    <div class="drop-zone" id="dropZone">
+      <input type="file" name="file" id="fileInput" accept=".pdf,.txt,.png,.jpg,.jpeg,.webp">
+      <div class="drop-content">
+        <span class="drop-icon">📁</span>
+        <p>Drag & drop a bulletin here or <label for="fileInput" class="link">browse</label></p>
+        <p class="hint">PDF · TXT · PNG · JPG · max 32 MB</p>
+      </div>
+    </div>
+    <div class="file-name" id="fileName"></div>
+
+    <label class="paste-label" for="pasted_text">Or paste bulletin text</label>
+    <textarea name="pasted_text" id="pasted_text" rows="8" placeholder="Optional: paste text if you already copied it from the bulletin…"></textarea>
+
+    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">Process Bulletin</button>
+  </form>
+</div>
+
+<div class="info-box">
+  <h3>How extraction works</h3>
+  <ol>
+    <li>Digital PDFs: text + tables via PyMuPDF and pdfplumber.</li>
+    <li>Scanned PDFs / photos: pages are rendered and read with RapidOCR.</li>
+    <li>Disease names, Maharashtra districts, case and death counts are matched with regex + spaCy.</li>
+    <li>Records are stored in SQLite and shown on the dashboard.</li>
+  </ol>
+  <p class="hint" style="margin-top:0.8rem">Scanned files can take 20–60 seconds. Keep this tab open.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const fileName = document.getElementById('fileName');
+  const form = document.getElementById('uploadForm');
+  const submitBtn = document.getElementById('submitBtn');
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
+    dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); });
+  });
+  ['dragenter', 'dragover'].forEach(ev => {
+    dropZone.addEventListener(ev, () => dropZone.classList.add('drag-over'));
+  });
+  ['dragleave', 'drop'].forEach(ev => {
+    dropZone.addEventListener(ev, () => dropZone.classList.remove('drag-over'));
+  });
+  dropZone.addEventListener('drop', e => {
+    const files = e.dataTransfer.files;
+    if (files.length) {
+      fileInput.files = files;
+      fileName.textContent = files[0].name;
+    }
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) fileName.textContent = fileInput.files[0].name;
+  });
+  form.addEventListener('submit', () => {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Extracting… scanned PDFs can take up to a minute';
+  });
+</script>
+{% endblock %}

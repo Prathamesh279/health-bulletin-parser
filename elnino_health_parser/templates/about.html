@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}About · El Niño Health Bulletin Parser{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <h1>About the Project</h1>
+</section>
+
+<div class="about-grid">
+  <div class="about-card">
+    <h2>Problem</h2>
+    <p>
+      Maharashtra Public Health Department publishes disease surveillance bulletins regularly.
+      Extracting disease names, affected districts, case counts and dates manually is
+      time-consuming and error-prone. No dedicated system focused on Maharashtra
+      automatically extracts El Niño-related disease information into an interactive dashboard.
+    </p>
+  </div>
+
+  <div class="about-card">
+    <h2>Solution</h2>
+    <p>
+      A Python / Flask web application that accepts PDF or text bulletins, extracts
+      structured records using spaCy NLP + regular expressions, stores them in SQLite,
+      and presents interactive charts and filterable tables for rapid outbreak monitoring.
+    </p>
+  </div>
+
+  <div class="about-card">
+    <h2>Target Diseases</h2>
+    <ul class="tag-list">
+      <li>Dengue</li>
+      <li>Malaria</li>
+      <li>Chikungunya</li>
+      <li>Cholera</li>
+      <li>Leptospirosis</li>
+      <li>Heat Stroke</li>
+    </ul>
+  </div>
+
+  <div class="about-card">
+    <h2>Tech Stack</h2>
+    <ul>
+      <li>Python 3 · Flask · SQLAlchemy · SQLite</li>
+      <li>spaCy · Regex · pdfplumber · Pandas</li>
+      <li>Plotly · HTML5 · CSS3 · Vanilla JS</li>
+    </ul>
+  </div>
+
+  <div class="about-card full">
+    <h2>Team</h2>
+    <p>
+      <strong>Group 9</strong> · S.Y. Mini Project · Department of AI &amp; DS<br>
+      K.J. Somaiya Institute of Technology, Sion, Mumbai<br><br>
+      Isha Chudasma (21) · Prathamesh Chavan (19) · Prachi Dhamecha (29)<br>
+      Guide: Prof. Pravin Patil
+    </p>
+  </div>
+</div>
+{% endblock %}

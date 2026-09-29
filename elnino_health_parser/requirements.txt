@@ -1,0 +1,17 @@
+flask
+flask-sqlalchemy
+pdfplumber
+pypdf
+pymupdf
+pandas
+plotly
+spacy
+python-dateutil
+werkzeug
+pillow
+numpy
+rapidocr-onnxruntime
+pytesseract
+winocr
+deep-translator
+pyngrok
