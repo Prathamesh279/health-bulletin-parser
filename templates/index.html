@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Home · El Niño Health Bulletin Parser{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <h1>El Niño-Aware<br>Health Bulletin Parser</h1>
+    <p class="hero-sub">
+      Automatically extract disease names, districts, case counts and dates from
+      Maharashtra Public Health bulletins. Built for faster surveillance of
+      Dengue, Malaria, Chikungunya, Cholera, Leptospirosis &amp; Heat Stroke.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload Bulletin</a>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-outline">View Dashboard</a>
+      <a href="{{ url_for('seed') }}" class="btn btn-ghost">Load Demo Data</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-card">
+      <span class="stat-value">{{ total_bulletins }}</span>
+      <span class="stat-label">Bulletins</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ total_records }}</span>
+      <span class="stat-label">Records</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ diseases|length }}</span>
+      <span class="stat-label">Diseases</span>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <h2>Core Capabilities</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <h3>PDF / Text Upload</h3>
+      <p>Upload Maharashtra health bulletins (Aarogya Patrika style). Text is extracted with pdfplumber.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>NLP + Regex Extraction</h3>
+      <p>spaCy named-entity recognition combined with domain-specific regular expressions for diseases, districts and counts.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🗺️</div>
+      <h3>District Mapping</h3>
+      <p>All 36 Maharashtra districts recognised. Filter and aggregate by location instantly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Interactive Dashboard</h3>
+      <p>Bar charts, trends, pie distribution and searchable tables powered by Plotly.</p>
+    </div>
+  </div>
+</section>
+
+{% if top_districts %}
+<section class="preview">
+  <h2>Top Affected Districts</h2>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>District</th><th>Total Cases</th></tr>
+      </thead>
+      <tbody>
+        {% for dist, cases in top_districts %}
+        <tr>
+          <td>{{ dist }}</td>
+          <td><strong>{{ cases }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · El Niño Health Bulletin Parser{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <h1>Surveillance Dashboard</h1>
+  <p>Filter, search and visualise extracted El Niño-related disease data for Maharashtra.</p>
+</section>
+
+<!-- Filters -->
+<form class="filter-bar" method="GET" action="{{ url_for('dashboard') }}">
+  <div class="filter-group">
+    <label for="disease">Disease</label>
+    <select name="disease" id="disease">
+      <option value="">All Diseases</option>
+      {% for d in all_diseases %}
+      <option value="{{ d }}" {% if disease_filter == d %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-group">
+    <label for="district">District</label>
+    <select name="district" id="district">
+      <option value="">All Districts</option>
+      {% for dist in all_districts %}
+      <option value="{{ dist }}" {% if district_filter == dist %}selected{% endif %}>{{ dist }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-group">
+    <label for="date_from">From</label>
+    <input type="date" name="date_from" id="date_from" value="{{ date_from }}">
+  </div>
+  <div class="filter-group">
+    <label for="date_to">To</label>
+    <input type="date" name="date_to" id="date_to" value="{{ date_to }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Apply</button>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">Reset</a>
+</form>
+
+<!-- Charts -->
+{% if charts %}
+<div class="chart-grid">
+  {% if charts.by_disease %}
+  <div class="chart-card">
+    <div id="chart-disease" class="chart"></div>
+  </div>
+  {% endif %}
+  {% if charts.by_district %}
+  <div class="chart-card">
+    <div id="chart-district" class="chart"></div>
+  </div>
+  {% endif %}
+  {% if charts.trend %}
+  <div class="chart-card chart-wide">
+    <div id="chart-trend" class="chart"></div>
+  </div>
+  {% endif %}
+  {% if charts.pie %}
+  <div class="chart-card">
+    <div id="chart-pie" class="chart"></div>
+  </div>
+  {% endif %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>No data yet. <a href="{{ url_for('seed') }}">Load demo data</a> or <a href="{{ url_for('upload') }}">upload a bulletin</a>.</p>
+</div>
+{% endif %}
+
+<!-- Records table -->
+<section class="records-section">
+  <div class="section-header">
+    <h2>Extracted Records ({{ records|length }})</h2>
+    <div class="table-actions">
+      <input type="search" id="tableSearch" placeholder="Search table…" class="search-input">
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table" id="recordsTable">
+      <thead>
+        <tr>
+          <th>Disease</th>
+          <th>District</th>
+          <th>Cases</th>
+          <th>Deaths</th>
+          <th>Date</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td><span class="badge badge-{{ r.disease|lower|replace(' ', '-') }}">{{ r.disease }}</span></td>
+          <td>{{ r.district }}</td>
+          <td class="num">{{ r.cases }}</td>
+          <td class="num">{{ r.deaths }}</td>
+          <td>{{ r.report_date.strftime('%d %b %Y') if r.report_date else '—' }}</td>
+          <td class="notes">{{ r.notes or '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">No matching records.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  {% if charts.by_disease %}
+  Plotly.newPlot('chart-disease', {{ charts.by_disease|safe }}.data, {{ charts.by_disease|safe }}.layout, {responsive: true, displayModeBar: false});
+  {% endif %}
+  {% if charts.by_district %}
+  Plotly.newPlot('chart-district', {{ charts.by_district|safe }}.data, {{ charts.by_district|safe }}.layout, {responsive: true, displayModeBar: false});
+  {% endif %}
+  {% if charts.trend %}
+  Plotly.newPlot('chart-trend', {{ charts.trend|safe }}.data, {{ charts.trend|safe }}.layout, {responsive: true, displayModeBar: false});
+  {% endif %}
+  {% if charts.pie %}
+  Plotly.newPlot('chart-pie', {{ charts.pie|safe }}.data, {{ charts.pie|safe }}.layout, {responsive: true, displayModeBar: false});
+  {% endif %}
+
+  // Client-side table search
+  document.getElementById('tableSearch')?.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#recordsTable tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}
