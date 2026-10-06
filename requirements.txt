@@ -12,7 +12,6 @@ pillow
 numpy
 rapidocr-onnxruntime
 pytesseract
-winocr
 deep-translator
 pyngrok
 winrt-Windows.Storage.Streams; sys_platform == "win32"
